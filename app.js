@@ -8,8 +8,6 @@ var Buttons = React.createClass({
 
     render: function () {
 
-        console.log(this.props);
-
         var submitGuess = this.props.submitGuess;
         var arr = [1, 2, 3, 4];
         var buttons = arr.map(function (num) {
@@ -36,14 +34,15 @@ var Main = React.createClass({
     },
 
     enableButtons: function () {
-        $('button').attr('disabled', 'false');
+        $('button').attr('disabled', false);
     },
 
     disableButtons: function () {
-        $('button').attr('disabled', 'true');
+        $('button').attr('disabled', true);
     },
 
     init: function () {
+        var s = this.state;
         this.enableButtons();
         var arr = [];
         var arrayLength = 5;
@@ -52,9 +51,11 @@ var Main = React.createClass({
             arr.push(Math.floor(Math.random() * 4) + 1);
         }
 
-        this.state.cpuTotal = arr;
+        s.cpuTotal = arr;
+
         console.log('cpuTotal:', this.state.cpuTotal);
         this.cpuRevealsOneMore();
+        this.setState(s);
     },
 
     componentDidMount: function () {
@@ -62,26 +63,30 @@ var Main = React.createClass({
     },
 
     cpuRevealsOneMore: function () {
-        this.state.cpuRevealed.push(this.state.cpuTotal[this.state.roundNumber]);
-        this.state.roundNumber++;
-        console.log('cpuRevealed:', this.state.cpuRevealed);
+        var s = this.state;
+        s.cpuRevealed.push(s.cpuTotal[s.roundNumber]);
+        s.roundNumber++;
+        console.log('cpuRevealed:', s.cpuRevealed);
+        this.setState(s);
     },
 
+
     handleUserInput: function (num) {
-        this.state.userSubmitted.push(num);
-        console.log('userSubmitted:', this.state.userSubmitted);
+        var s = this.state;
+        s.userSubmitted.push(num);
+        console.log('userSubmitted:', s.userSubmitted);
 
         // User won
-        if (_.isEqual(this.state.userSubmitted, this.state.cpuRevealed) && this.state.userSubmitted.length === this.state.cpuTotal.length) {
-
+        if (_.isEqual(s.userSubmitted, s.cpuRevealed) && s.userSubmitted.length === s.cpuTotal.length) {
             console.log('You Win!');
             this.disableButtons();
 
         // User got a guess correct
-        } else if (_.isEqual(this.state.userSubmitted, this.state.cpuRevealed)) {
-            this.state.userSubmitted = [];
+        } else if (_.isEqual(s.userSubmitted, s.cpuRevealed)) {
+            s.userSubmitted = [];
             this.cpuRevealsOneMore();
         }
+        this.setState(s);
     },
 
     render: function () {
